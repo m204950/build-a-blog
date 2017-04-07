@@ -44,19 +44,19 @@ class Index(Handler):
         self.write('<a href="/blog">blog</a>')
 
 class BlogPage(Handler):
-    def render_front(self, title="", blog="", error=""):
+    def render_blog(self, title="", blog="", error=""):
         blogs = db.GqlQuery("SELECT * FROM Blog " +
                             "ORDER BY created DESC " +
                             "LIMIT 5")
 
-        self.render("blog.html", pagetitle = "Tom's Blog", title=title, blog=blog, error=error, blogs=blogs)
+        self.render("blog.html", pagetitle = "Latest Blog Entries", title=title, blog=blog, error=error, blogs=blogs)
 
     def get(self):
-        self.render_front()
+        self.render_blog()
 
 class NewPost(Handler):
     def render_post(self, title="", blog="", error=""):
-        self.render("post.html", pagetitle = "Tom's Blog", title=title, blog=blog, error=error)
+        self.render("post.html", pagetitle = "New Post", title=title, blog=blog, error=error)
 
     def get(self):
         self.render_post()
@@ -68,13 +68,26 @@ class NewPost(Handler):
             b = Blog(title = title, blog = blog)
             b.put()
 
-            self.redirect("/blog")
+            self.redirect("/blog/" + str(b.key().id()))
         else:
             error = "we need both a title and a blog entry"
             self.render_post(title, blog, error)
 
+class ViewPostHandler(Handler):
+    def render_post(self, id, title="", blog="", error=""):
+        blog = Blog.get_by_id(int(id))
+        if blog:
+            self.render("single_post.html", pagetitle = "Single Post", title=title, blog=blog, error=error)
+        else:
+            error = "Nothing found for ID: " + str(id)
+            self.render("single_post.html", pagetitle = "Single Post", title=title, blog=blog, error=error)
+
+    def get(self, id):
+        self.render_post(id)
+
 app = webapp2.WSGIApplication([
     ('/', Index),
     ('/blog', BlogPage),
-    ('/blog/newpost', NewPost)
+    ('/blog/newpost', NewPost),
+    webapp2.Route('/blog/<id:\d+>', ViewPostHandler)
 ], debug=True)
