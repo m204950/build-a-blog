@@ -39,15 +39,27 @@ class Blog(db.Model):
     blog = db.TextProperty(required = True)
     created = db.DateTimeProperty(auto_now_add = True)
 
-class MainPage(Handler):
-    def render_front(self, title="", blog="", error=""):
-        blogs = db.GqlQuery("SELECT * FROM Blog "
-                            "ORDER BY created DESC")
+class Index(Handler):
+    def get(self):
+        self.write('<a href="/blog">blog</a>')
 
-        self.render("front.html", pagetitle = "Tom's Blog", title=title, blog=blog, error=error, blogs=blogs)
+class BlogPage(Handler):
+    def render_front(self, title="", blog="", error=""):
+        blogs = db.GqlQuery("SELECT * FROM Blog " +
+                            "ORDER BY created DESC " +
+                            "LIMIT 5")
+
+        self.render("blog.html", pagetitle = "Tom's Blog", title=title, blog=blog, error=error, blogs=blogs)
 
     def get(self):
         self.render_front()
+
+class NewPost(Handler):
+    def render_post(self, title="", blog="", error=""):
+        self.render("post.html", pagetitle = "Tom's Blog", title=title, blog=blog, error=error)
+
+    def get(self):
+        self.render_post()
 
     def post(self):
         title = self.request.get("title")
@@ -56,11 +68,13 @@ class MainPage(Handler):
             b = Blog(title = title, blog = blog)
             b.put()
 
-            self.redirect("/")
+            self.redirect("/blog")
         else:
             error = "we need both a title and a blog entry"
-            self.render_front(title, blog, error)
+            self.render_post(title, blog, error)
 
 app = webapp2.WSGIApplication([
-    ('/', MainPage)
+    ('/', Index),
+    ('/blog', BlogPage),
+    ('/blog/newpost', NewPost)
 ], debug=True)

@@ -17,13 +17,4 @@
   <input type="submit">
 </form>
 
-<hr>
-
-{% for blog in blogs %}
-  <div class="blog">
-    <div class="blog-title">{{blog.title}}</div>
-    <pre class="blog-body">{{blog.blog}}</pre>
-  </div>
-{% endfor %}
-
 {% endblock %}
