@@ -36,7 +36,7 @@ class Handler(webapp2.RequestHandler):
 
 class Blog(db.Model):
     title = db.StringProperty(required = True)
-    blog = db.TextProperty(required = True)
+    post = db.TextProperty(required = True)
     created = db.DateTimeProperty(auto_now_add = True)
 
 class Index(Handler):
@@ -44,43 +44,43 @@ class Index(Handler):
         self.write('<a href="/blog">blog</a>')
 
 class BlogPage(Handler):
-    def render_blog(self, title="", blog="", error=""):
-        blogs = db.GqlQuery("SELECT * FROM Blog " +
+    def render_blog(self, title="", post="", error=""):
+        posts = db.GqlQuery("SELECT * FROM Blog " +
                             "ORDER BY created DESC " +
                             "LIMIT 5")
 
-        self.render("blog.html", pagetitle = "Latest Blog Entries", title=title, blog=blog, error=error, blogs=blogs)
+        self.render("blog.html", pagetitle = "Latest Blog Entries", title=title, post=post, error=error, posts=posts)
 
     def get(self):
         self.render_blog()
 
 class NewPost(Handler):
-    def render_post(self, title="", blog="", error=""):
-        self.render("post.html", pagetitle = "New Post", title=title, blog=blog, error=error)
+    def render_post(self, title="", post="", error=""):
+        self.render("post.html", pagetitle = "New Post", title=title, post=post, error=error)
 
     def get(self):
         self.render_post()
 
     def post(self):
         title = self.request.get("title")
-        blog = self.request.get("blog")
-        if title and blog:
-            b = Blog(title = title, blog = blog)
+        post = self.request.get("post")
+        if title and post:
+            b = Blog(title = title, post = post)
             b.put()
 
             self.redirect("/blog/" + str(b.key().id()))
         else:
             error = "we need both a title and a blog entry"
-            self.render_post(title, blog, error)
+            self.render_post(title, post, error)
 
 class ViewPostHandler(Handler):
-    def render_post(self, id, title="", blog="", error=""):
-        blog = Blog.get_by_id(int(id))
-        if blog:
-            self.render("single_post.html", pagetitle = "Single Post", title=title, blog=blog, error=error)
+    def render_post(self, id, title="", post="", error=""):
+        post = Blog.get_by_id(int(id))
+        if post:
+            self.render("single_post.html", pagetitle = "Single Post", title=title, post=post, error=error)
         else:
             error = "Nothing found for ID: " + str(id)
-            self.render("single_post.html", pagetitle = "Single Post", title=title, blog=blog, error=error)
+            self.render("single_post.html", pagetitle = "Single Post", title=title, post=post, error=error)
 
     def get(self, id):
         self.render_post(id)

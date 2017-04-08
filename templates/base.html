@@ -36,14 +36,14 @@
     hr {
       margin: 20px auto;
     }
-    .blog + .blog {
+    .post + .post {
       margin-top: 20px;
     }
-    .blog-title {
+    .post-title {
       font-weight: bold;
       font-size: 20px;
     }
-    .blog-body {
+    .post-body {
       margin: 0;
       font-size: 17px;
     }
@@ -53,6 +53,10 @@
     <h1>
     {{pagetitle}}
   </h1>
+  <ul>
+      <li><a href="/blog">The Blog</a></li>
+      <li><a href="/blog/newpost">New Post</a></li>
+  </ul>
 
     {% block content %}
     {% endblock %}

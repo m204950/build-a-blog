@@ -2,12 +2,12 @@
 
 {% block content %}
 
-{% for blog in blogs %}
-  <div class="blog">
-    <div class="blog-title">
-      <a href="/blog/{{blog.key().id()}}">{{blog.title}}</a>
+{% for post in posts %}
+  <div class="post">
+    <div class="post-title">
+      <a href="/blog/{{post.key().id()}}">{{post.title}}</a>
     </div>
-    <pre class="blog-body">{{blog.blog}}</pre>
+    <pre class="post-body">{{post.post}}</pre>
   </div>
 {% endfor %}
 

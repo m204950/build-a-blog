@@ -2,10 +2,10 @@
 
 {% block content %}
 
-{% if blog %}
-<div class="blog">
-  <div class="blog-title">{{blog.title}}</div>
-  <pre class="blog-body">{{blog.blog}}</pre>
+{% if post %}
+<div class="post">
+  <div class="post-title">{{post.title}}</div>
+  <pre class="post-body">{{post.post}}</pre>
 </div>
 {% else %}
   <div class="error">{{error}}</div>
