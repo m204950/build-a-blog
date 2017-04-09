@@ -44,12 +44,12 @@ class Index(Handler):
         self.write('<a href="/blog">blog</a>')
 
 class BlogPage(Handler):
-    def render_blog(self, title="", post="", error=""):
+    def render_blog(self, error=""):
         posts = db.GqlQuery("SELECT * FROM Blog " +
                             "ORDER BY created DESC " +
                             "LIMIT 5")
 
-        self.render("blog.html", pagetitle = "Latest Blog Entries", title=title, post=post, error=error, posts=posts)
+        self.render("blog.html", pagetitle = "Latest Blog Entries", error=error, posts=posts)
 
     def get(self):
         self.render_blog()
