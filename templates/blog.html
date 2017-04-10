@@ -11,4 +11,25 @@
   </div>
 {% endfor %}
 
+<hr>
+<form>
+  Total Posts {{total_posts}}
+  <br>
+  Page: <input type="number" name="page" value="{{page}}">
+  <input type="submit" value="Submit"><br>
+{% if page %}
+  {% if page > 1 %}
+  <input type="submit" name="prev" value="Prev">
+  {% endif %}
+  {% if page * 5 < total_posts %}
+  <input type="submit" name="next" value="Next">
+  {% endif %}
+{% else %}
+  {% if total_posts > 5 %}
+    <input type="submit" name="next" value="Next">
+  {% endif %}
+{% endif %}
+
+  </form>
+
 {% endblock %}

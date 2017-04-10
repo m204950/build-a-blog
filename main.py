@@ -39,20 +39,43 @@ class Blog(db.Model):
     post = db.TextProperty(required = True)
     created = db.DateTimeProperty(auto_now_add = True)
 
+def get_posts(limit, offset=0):
+    # TODO: query the database for posts, and return them
+    posts = db.GqlQuery("SELECT * FROM Blog " +
+                        "ORDER BY created DESC " +
+                        "LIMIT " + str(limit) + " OFFSET " + str(offset))
+    return posts
+
 class Index(Handler):
     def get(self):
         self.write('<a href="/blog">blog</a>')
 
 class BlogPage(Handler):
-    def render_blog(self, error=""):
-        posts = db.GqlQuery("SELECT * FROM Blog " +
-                            "ORDER BY created DESC " +
-                            "LIMIT 5")
-
-        self.render("blog.html", pagetitle = "Latest Blog Entries", error=error, posts=posts)
+    def render_blog(self, page):
+        if page:
+            offset = (int(page) - 1) * 5
+        else:
+            offset = 0
+        posts = get_posts(5, offset)
+        page = int(page)
+        total_posts = posts.count(offset=0, limit=1000)
+        self.render("blog.html", pagetitle = "Blog", page=page, posts=posts, total_posts=total_posts)
 
     def get(self):
-        self.render_blog()
+        page = self.request.get("page")
+        prev = self.request.get("prev")
+        next = self.request.get("next")
+        if page:
+            page = int(page)
+        else:
+            page = 1
+
+        if prev and page > 1:
+            page -= 1
+        elif next:
+            page += 1
+        
+        self.render_blog(page)
 
 class NewPost(Handler):
     def render_post(self, title="", post="", error=""):
